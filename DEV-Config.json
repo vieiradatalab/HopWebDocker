@@ -1,0 +1,47 @@
+{
+  "variables" : [ {
+    "name" : "MySql_User",
+    "value" : "rodrigo.pgcin",
+    "description" : ""
+  }, {
+    "name" : "MySql_Password",
+    "value" : "arruda1810",
+    "description" : ""
+  }, {
+    "name" : "MySql_Host",
+    "value" : "mysqlhost",
+    "description" : ""
+  }, {
+    "name" : "MySql_Port",
+    "value" : "3306",
+    "description" : ""
+  }, {
+    "name" : "MySql_DB",
+    "value" : "hopfonte",
+    "description" : ""
+  }, {
+    "name" : "Postgre_User",
+    "value" : "rodrigopgcin",
+    "description" : ""
+  }, {
+    "name" : "Postgre_Password",
+    "value" : "arruda2212",
+    "description" : ""
+  }, {
+    "name" : "Postgre_Host",
+    "value" : "postgrehost",
+    "description" : ""
+  }, {
+    "name" : "Postgre_Port",
+    "value" : "5432",
+    "description" : ""
+  }, {
+    "name" : "Postgre_DB",
+    "value" : "hopdestino",
+    "description" : ""
+  }, {
+    "name" : "Postgre_Schema",
+    "value" : "dev_destino",
+    "description" : ""
+  } ]
+}

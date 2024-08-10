@@ -1,0 +1,225 @@
+## PROJETO AMBIENTE ETL COM APACHE HOP-WEB ##
+
+# FERRAMENTAS:
+# MySQL - DBfonte
+# PostgreSQL - DBdestino 
+# DbSchema - Testes e apoio
+# Apache Hop - ELT
+# Metabase - Dashboards
+
+# Prerequisitos: 
+	Docker instalado!!
+	Documentação Oficial - Install Docker Desktop no @windows, @Linux e @mac
+		https://docs.docker.com/desktop/install/windows-install/
+		https://docs.docker.com/desktop/install/linux-install/
+		https://docs.docker.com/desktop/install/mac-install/
+
+# Estrutura de pasta do projeto na máquina host
+	/home/$USER/Projetos/Hopbase
+
+## 1 - Criar rede do projeto
+	# check as resde existentes:
+		docker network ls
+
+	# cria a rede do projeto:
+		docker network create --driver bridge redehop
+
+	# check se a resde foi criada:
+		docker network ls
+
+## 2 - Criar o serviço do banco de dados MySQL
+	# verifica os containers e imagens disponíveis
+		docker ps
+
+	# criar o container MySql:
+		docker run --name mysqlfonte --network redehop -e MYSQL_ROOT_PASSWORD=root -p 3306:3306 -d mysql:8.0
+
+	# verifica se o container está ativo
+		docker ps 
+
+	# acessa o container via terminal interativo
+		ocker exec -it mysqlfonte mysql -u root -p
+
+	# instruções sql para criar usuário e database fonte para o projeto
+		CREATE USER 'rodrigo.pgcin' IDENTIFIED BY 'arruda1810';
+		CREATE SCHEMA hopfonte;
+		GRANT ALL PRIVILEGES ON hopfonte.* TO 'rodrigo.pgcin'; 
+		FLUSH PRIVILEGES;
+	# Sair do terminal do banco de dados
+		Exit
+
+## 3 - Baixar a ferramenta DbSchema para acesso ao banco de dados
+	# Baixar o instalador do site do DbSchema
+	# Na pasta de Downloads usar os comandos para instalar o DbSchema, seguindo as instruções do intalador.
+		chmod +x DbSchema_unix_X_X_X.sh
+		./DbSchema_unix_X_X_X.sh
+
+	# Abrir o DbSchema e acessar banco de dados de fonte com as credenciais:
+		Host: localhost
+		port: 3306
+		User: rodrigo.pgcin
+		Password: arruda1810
+		Database: hopfonte
+
+	# Usar o arquivo para carregar dados no banco fonte
+		hopfonte.sql
+
+	# Usar a conexção do DbSchema para verificar o carregamentos dos dados da fonte
+	
+	
+## 4 - Criar o serviço do banco de dados PostgreSQL
+
+	# verifica os containers e imagens disponíveis
+		docker ps
+
+	# criar o container PostgreSQL:
+		docker run --name postgredestino --network redehop -e POSTGRES_USER=root -e POSTGRES_PASSWORD=root -p 5432:5432 -d postgres
+
+	# verifica se o container está ativo
+		docker ps
+
+	# acessa o container via terminal interativo
+		docker exec -it postgredestino psql -U root
+
+	# instruções sql para criar usuário e database destino para o projeto
+		# Cria o usuário
+		CREATE ROLE rodrigopgcin WITH LOGIN PASSWORD 'arruda2212';
+		
+		# Cria bancos de dados do projeto
+		CREATE DATABASE dev OWNER rodrigopgcin;
+		CREATE DATABASE qa OWNER rodrigopgcin;
+		CREATE DATABASE prod OWNER rodrigopgcin;
+		
+		# Sair do terminal do postgre
+		Exit
+		
+		# Acessar os bancos via DbSchema e criar os schemas em cada banco de dados.
+		Host: localhost
+		port: 5432
+		User: rodrigopgcin
+		Password: dsa2212
+		Database: dev
+		Database: prod
+		Database: qa
+		
+
+	# Usar a conexção do DbSchema para verificar o banco destino está ativo e aguardando dados
+	# O carregamento dos dados para o destino será realizado via ETL com o apache hop
+
+
+## 5 - Criar o serviço do apache hop
+
+	# Volume mapeado para o container
+	# Estrutura de pasta na máguina host:Pasta mapeada do container
+		/home/$USER/Projetos/Hopbase/files:/files
+	
+	# Para ter certeza de usaremos os drivers JDBC corretos para a conexção com o apache hop:
+	# Copiar os drivers que foram instalados com o DbSchema para o container docker:
+	# Acesse a pasta:
+		cd /home/$USER/DbSchema/drivers/MySql
+	# Uses os comandos a seguir para verificar o driver e fazer uma cópia dele para a pasta mapeada:
+		ls -la
+		cp mysql-connector-j-8.4.0.jar /home/$USER/Projetos/Hopbase/files
+	# Acesse a pasta:
+		cd /home/$USER/DbSchema/drivers/PostgreSQL
+	# Uses os comandos a seguir para verificar o driver e fazer uma cópia dele para a pasta mapeada:
+		ls -la
+		cp postgresql-42.7.3.jar /home/$USER/Projetos/Hopbase/files
+
+	# Com a estrutura de pastas criada e os arquivos de driver já posicionados:
+	# Comando para criar container com apache hop (conforme documentação do apache hop)
+		docker run -it \
+		  --name hopserver \
+		  --network redehop \
+		  --env HOP_OPTIONS="-Xmx4096m -Dfile.encoding=UTF8" \
+		  --env HOP_SERVER_USER=admin \
+		  --env HOP_SERVER_PASS=admin \
+		  --env HOP_SERVER_SHUTDOWNPORT=8080 \
+		  --env HOP_SERVER_PORT=8180 \
+		  --env HOP_SERVER_PORT=8181 \
+		  --env HOP_SERVER_HOSTNAME=0.0.0.0 \
+		  -v /home/$USER/Projetos/Hopbase/files:/files \
+		  -p 8080:8080 \
+		  -p 8181:8181 \
+		  -p 8180:8180 \
+		  -d \
+		 apache/hop-web:2.8.0
+  
+	# Verifica se o container está ativo
+		docker ps
+
+	# Para que os drivers JDBC sejam corretamente reconhecidos pelo apache hop, eles precisam ser salvos na pasta "/usr/local/tomcat/lib" do conteiner "hopserver".
+	
+	# Vamos acessar o container via terminal para mover os drivers para a pasta correta.
+		docker exec -it hopserver /bin/bash
+
+	# Navegar até a pasta "files", que foi mapeada para o projeto
+		cd /files
+	
+	# verificar o conteúdo da pasta files
+		ls -la
+	
+	# mover os drivers JDBC para a pasta correta
+		mv mysql-connector-j-8.4.0.jar /usr/local/tomcat/lib
+		mv postgresql-42.7.3.jar /usr/local/tomcat/lib
+	
+	# verificar se os drivers JDBC estão na pasta correta
+		cd /usr/local/tomcat/lib
+		ls -la
+	
+	# sair do terminal
+		exit
+
+
+## 6 - Testar as conexções do apache hop com os bancos de dados mysqlhost e postgrehost.
+
+	# Acesse o Apache Hop pelo 'link http://localhost:8080/ui', no menu lateral, abra a aba Metadata.
+	# Clique com o botão direito do mouse sobre o item "Relational Database Conection", e na seguência clique em New.
+	# Na janela que se abre, preencha os campo com as credenciais a seguir para testar as coneções.
+	# Banco MySql:
+		Connection name: teste
+		Connection type: MySQL
+		Username: rodrigo.pgcin
+		Password: arruda1810
+		Server host name: mysqlfonte
+		Port number: 3306
+		Database name: hopfonte
+
+	# Banco PostgreSQL:
+		Connection name: teste
+		Connection type: PostgreSQL
+		Username: rodrigopgcin
+		Password: arruda2212
+		Server host name: postgredestino
+		Port number: 5432
+		Database name: dev
+		Database name: prod
+		Database name: qa
+
+	
+
+
+	# Estrutura pipe line de teste para carragar uma tabela da fonte para destino
+	
+	# Configurar ambiente do projeto:
+	
+	
+
+
+
+## 7 - Criar o serviço do Metabase
+	# verifica os containers e imagens disponíveis
+		docker ps
+
+	# criar o container Metabase:
+		docker run --name metabase --network redehop -p 3000:3000 -d metabase/metabase
+
+
+
+
+ 
+ 
+ 
+ 
+ 
+ 
