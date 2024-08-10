@@ -39,7 +39,7 @@
 		docker ps 
 
 	# acessa o container via terminal interativo
-		ocker exec -it mysqlfonte mysql -u root -p
+		docker exec -it mysqlfonte mysql -u root -p
 
 	# instruções sql para criar usuário e database fonte para o projeto
 		CREATE USER 'rodrigo.pgcin' IDENTIFIED BY 'arruda1810';
