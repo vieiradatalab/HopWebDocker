@@ -62,8 +62,9 @@
 		Password: arruda1810
 		Database: hopfonte
 
-	# Usar o arquivo para carregar dados no banco fonte
-		hopfonte.sql
+	# Usar os arquivos para carregar dados no banco fonte
+		Clientes.csv
+		Pedidos.csv
 
 	# Usar a conexção do DbSchema para verificar o carregamentos dos dados da fonte
 	
