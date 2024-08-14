@@ -16,7 +16,7 @@
 		https://docs.docker.com/desktop/install/mac-install/
 
 # Estrutura de pasta do projeto na máquina host
-	/home/$USER/Projetos/Hopbase
+	/home/$USER/Projetos/HopWebDocker
 
 ## 1 - Criar rede do projeto
 	# check as resde existentes:
@@ -109,7 +109,7 @@
 
 	# Diretório mapeado para o container
 	# Estrutura de pasta na máguina host:Pasta mapeada do container
-		/home/$USER/Projetos/Hopbase/files:/files
+		/home/$USER/Projetos/HopWebDocker/files:/files
 	
 	# Para ter certeza de usaremos os drivers JDBC corretos para a conexção com o apache hop:
 	# Copiar os drivers que foram instalados com o DbSchema para o container docker:
@@ -117,12 +117,12 @@
 		cd /home/$USER/DbSchema/drivers/MySql
 	# Uses os comandos a seguir para verificar o driver e fazer uma cópia dele para a pasta mapeada:
 		ls -la
-		cp mysql-connector-j-8.4.0.jar /home/$USER/Projetos/Hopbase/files
+		cp mysql-connector-j-8.4.0.jar /home/$USER/Projetos/HopWebDocker/files
 	# Acesse a pasta:
 		cd /home/$USER/DbSchema/drivers/PostgreSQL
 	# Uses os comandos a seguir para verificar o driver e fazer uma cópia dele para a pasta mapeada:
 		ls -la
-		cp postgresql-42.7.3.jar /home/$USER/Projetos/Hopbase/files
+		cp postgresql-42.7.3.jar /home/$USER/Projetos/HopWebDocker/files
 
 	# Com a estrutura de pastas criada e os arquivos de driver já posicionados:
 	# Comando para criar container com apache hop (conforme documentação do apache hop)
@@ -136,7 +136,7 @@
 		  --env HOP_SERVER_PORT=8180 \
 		  --env HOP_SERVER_PORT=8181 \
 		  --env HOP_SERVER_HOSTNAME=0.0.0.0 \
-		  -v /home/$USER/Projetos/Hopbase/files:/files \
+		  -v /home/$USER/Projetos/HopWebDocker/files:/files \
 		  -p 8080:8080 \
 		  -p 8181:8181 \
 		  -p 8180:8180 \
