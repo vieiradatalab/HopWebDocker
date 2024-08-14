@@ -107,7 +107,7 @@
 
 ## 5 - Criar o serviço do apache hop
 
-	# Volume mapeado para o container
+	# Diretório mapeado para o container
 	# Estrutura de pasta na máguina host:Pasta mapeada do container
 		/home/$USER/Projetos/Hopbase/files:/files
 	
