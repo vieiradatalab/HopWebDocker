@@ -9,7 +9,7 @@
     "description" : ""
   }, {
     "name" : "MySql_Host",
-    "value" : "mysqlhost",
+    "value" : "mysqlfonte",
     "description" : ""
   }, {
     "name" : "MySql_Port",
@@ -29,7 +29,7 @@
     "description" : ""
   }, {
     "name" : "Postgre_Host",
-    "value" : "postgrehost",
+    "value" : "postgredestino",
     "description" : ""
   }, {
     "name" : "Postgre_Port",
@@ -37,11 +37,7 @@
     "description" : ""
   }, {
     "name" : "Postgre_DB",
-    "value" : "hopdestino",
+    "value" : "dev",
     "description" : ""
-  }, {
-    "name" : "Postgre_Schema",
-    "value" : "dev_destino",
-    "description" : ""
-  } ]
+  }]
 }
