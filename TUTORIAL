@@ -39,7 +39,14 @@
 		docker ps 
 
 	# acessa o container via terminal interativo
-		docker exec -it mysqlfonte mysql -u root -p
+		# abre terminal simples dentro do container, opcional
+			docker exec -it mysqlfonte bash 
+		
+		# abre terminal MySQL dentro do container
+			docker exec -it mysqlfonte mysql -u root -p
+		
+		# no Docker Desktop, abre terminal MySQL
+			mysql -u root -p
 
 	# instruções sql para criar usuário e database fonte para o projeto
 		CREATE USER 'rodrigo.pgcin' IDENTIFIED BY 'arruda1810';
@@ -50,7 +57,7 @@
 		Exit
 
 ## 3 - Baixar a ferramenta DbSchema para acesso ao banco de dados
-	# Baixar o instalador do site do DbSchema
+	# Baixar o instalador do site do DbSchema - https://dbschema.com/download.html
 	# Na pasta de Downloads usar os comandos para instalar o DbSchema, seguindo as instruções do intalador.
 		chmod +x DbSchema_unix_X_X_X.sh
 		./DbSchema_unix_X_X_X.sh
@@ -62,7 +69,10 @@
 		Password: arruda1810
 		Database: hopfonte
 
-	# Usar a conexção do DbSchema para verificar o banco de dados fonte (em branco - limpo)
+	# Usar o arquivo fonte.sql para carregar os dados no banco fonte.
+		fonte.sql
+
+	# Usar a conexção do DbSchema para verificar o banco de dados fonte
 	
 	
 ## 4 - Criar o serviço do banco de dados PostgreSQL
