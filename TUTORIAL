@@ -38,14 +38,14 @@
 	# verifica se o container está ativo
 		docker ps 
 
-	# acessa o container via terminal interativo
-		# abre terminal simples dentro do container, opcional
-			docker exec -it mysqlfonte bash 
-		
-		# abre terminal MySQL dentro do container
+	# Acessar o container via terminal interativo
+		# Abre terminal MySQL dentro do container
 			docker exec -it mysqlfonte mysql -u root -p
-		
-		# no Docker Desktop, abre terminal MySQL
+
+		# (opcional) Abre um terminal Linux dentro do container
+			docker exec -it mysqlfonte bash 
+				
+		# (opcional) Se já estiver no terminal do Docker Desktop, abre terminal do MySQL
 			mysql -u root -p
 
 	# instruções sql para criar usuário e database fonte para o projeto
@@ -86,36 +86,43 @@
 	# verifica se o container está ativo
 		docker ps
 
-	# acessa o container via terminal interativo
-		docker exec -it postgredestino psql -U root
+	# Acessar o container via terminal interativo
+		# Abre terminal do PostgreSQL dentro do container
+			docker exec -it postgredestino psql -U root
+
+		# (opcional) Abre um terminal Linux dentro do container
+			docker exec -it postgredestino bash 
+		
+		# (opcional) Se já estiver no terminal do Docker Desktop, abre terminal do PostgreSQL
+			psql -U root
 
 	# instruções sql para criar usuário e database destino para o projeto
 		# Cria o usuário
-		CREATE ROLE rodrigopgcin WITH LOGIN PASSWORD 'arruda2212';
+			CREATE ROLE rodrigopgcin WITH LOGIN PASSWORD 'arruda2212';
 		
 		# Cria bancos de dados do projeto
-		CREATE DATABASE dev OWNER rodrigopgcin;
-		CREATE DATABASE qa OWNER rodrigopgcin;
-		CREATE DATABASE prod OWNER rodrigopgcin;
+			CREATE DATABASE dev OWNER rodrigopgcin;
+			CREATE DATABASE qa OWNER rodrigopgcin;
+			CREATE DATABASE prod OWNER rodrigopgcin;
 		
 		# Sair do terminal do postgre
-		Exit
+			Exit
 		
 		# Acessar os bancos via DbSchema e criar os schemas em cada banco de dados.
-		Host: localhost
-		port: 5432
-		User: rodrigopgcin
-		Password: dsa2212
-		Database: dev
-		Database: prod
-		Database: qa
+			Host: localhost
+			port: 5432
+			User: rodrigopgcin
+			Password: dsa2212
+			Database: dev
+			Database: prod
+			Database: qa
 		
 
 	# Usar a conexção do DbSchema para verificar o banco destino está ativo e aguardando dados
-	# O carregamento dos dados para o destino será realizado via ETL com o apache hop
+	# O carregamento dos dados para o destino será realizado via ETL com o Apache Hop Web
 
 
-## 5 - Criar o serviço do apache hop
+## 5 - Criar o serviço do Apache Hop Web
 
 	# Diretório mapeado para o container
 	# Estrutura de pasta na máguina host:Pasta mapeada do container
@@ -125,33 +132,45 @@
 	# Copiar os drivers que foram instalados com o DbSchema para o container docker:
 	# Acesse a pasta:
 		cd /home/$USER/DbSchema/drivers/MySql
+	
 	# Uses os comandos a seguir para verificar o driver e fazer uma cópia dele para a pasta mapeada:
 		ls -la
 		cp mysql-connector-j-8.4.0.jar /home/$USER/Projetos/HopWebDocker/files
+	
 	# Acesse a pasta:
 		cd /home/$USER/DbSchema/drivers/PostgreSQL
+	
 	# Uses os comandos a seguir para verificar o driver e fazer uma cópia dele para a pasta mapeada:
 		ls -la
 		cp postgresql-42.7.3.jar /home/$USER/Projetos/HopWebDocker/files
 
 	# Com a estrutura de pastas criada e os arquivos de driver já posicionados:
-	# Comando para criar container com apache hop (conforme documentação do apache hop)
-		docker run -it \
-		  --name hopserver \
-		  --network redehop \
-		  --env HOP_OPTIONS="-Xmx4096m -Dfile.encoding=UTF8" \
-		  --env HOP_SERVER_USER=admin \
-		  --env HOP_SERVER_PASS=admin \
-		  --env HOP_SERVER_SHUTDOWNPORT=8080 \
-		  --env HOP_SERVER_PORT=8180 \
-		  --env HOP_SERVER_PORT=8181 \
-		  --env HOP_SERVER_HOSTNAME=0.0.0.0 \
-		  -v /home/$USER/Projetos/HopWebDocker/files:/files \
-		  -p 8080:8080 \
-		  -p 8181:8181 \
-		  -p 8180:8180 \
-		  -d \
-		 apache/hop-web:2.8.0
+		# Comando para criar container com apache hop (conforme documentação do apache hop)
+			docker run -it \
+			  --name hopserver \
+			  --network redehop \
+			  --env HOP_OPTIONS="-Xmx8192m -Dfile.encoding=UTF8" \
+			  --env HOP_SERVER_USER=admin \
+			  --env HOP_SERVER_PASS=admin \
+			  --env HOP_SERVER_SHUTDOWNPORT=8080 \
+			  --env HOP_SERVER_PORT=8180 \
+			  --env HOP_SERVER_PORT=8181 \
+			  --env HOP_SERVER_HOSTNAME=0.0.0.0 \
+			  -v /home/$USER/Projetos/HopWebDocker/files:/files \
+			  -p 8080:8080 \
+			  -p 8181:8181 \
+			  -p 8180:8180 \
+			  -d \
+			  apache/hop-web:2.8.0
+
+	# Customizações realizadas, a partir da documentação do Apache Hop 
+		# Documentação: https://hop.apache.org/tech-manual/latest/docker-container.html
+		# DockerHub: https://hub.docker.com/r/apache/hop-web/tags
+
+			# --network redehop \ (define a rede do projeto)
+			# --env HOP_OPTIONS="-Xmx8192m -Dfile.encoding=UTF8" \ (define o volume de memoria alocada e a codificação)
+			# apache/hop-web:2.8.0 (define que é o Apache Hop Web, na versão 2.8.0)
+
   
 	# Verifica se o container está ativo
 		docker ps
@@ -211,17 +230,6 @@
 
 	# Estrutura pipe line de teste para carragar dados no banco fonte, e da fonte para o (postgre) DW.
 	
-	
-	
-	
-	# Usar os arquivos para carregar dados no banco fonte
-		Clientes.csv
-		Pedidos.csv
-
-
-	
-
-
 
 ## 7 - Criar o serviço do Metabase
 	# verifica os containers e imagens disponíveis
