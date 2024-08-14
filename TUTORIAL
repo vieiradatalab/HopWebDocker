@@ -62,11 +62,7 @@
 		Password: arruda1810
 		Database: hopfonte
 
-	# Usar os arquivos para carregar dados no banco fonte
-		Clientes.csv
-		Pedidos.csv
-
-	# Usar a conexção do DbSchema para verificar o carregamentos dos dados da fonte
+	# Usar a conexção do DbSchema para verificar o banco de dados fonte (em branco - limpo)
 	
 	
 ## 4 - Criar o serviço do banco de dados PostgreSQL
@@ -172,7 +168,6 @@
 	# sair do terminal
 		exit
 
-
 ## 6 - Testar as conexções do apache hop com os bancos de dados mysqlhost e postgrehost.
 
 	# Acesse o Apache Hop pelo 'link http://localhost:8080/ui', no menu lateral, abra a aba Metadata.
@@ -198,13 +193,22 @@
 		Database name: prod
 		Database name: qa
 
-	
-
-
-	# Estrutura pipe line de teste para carragar uma tabela da fonte para destino
-	
 	# Configurar ambiente do projeto:
+		Usar arquivo DEV-Config.json como modelo e criar os aquivos:
+		DEV-Config.json
+		QA-Config.json
+		PROD-Config.json
+
+	# Estrutura pipe line de teste para carragar dados no banco fonte, e da fonte para o (postgre) DW.
 	
+	
+	
+	
+	# Usar os arquivos para carregar dados no banco fonte
+		Clientes.csv
+		Pedidos.csv
+
+
 	
 
 
