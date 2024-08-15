@@ -222,21 +222,33 @@
 		Database name: prod
 		Database name: qa
 
-	# Configurar ambiente do projeto:
-		Usar arquivo DEV-Config.json como modelo e criar os aquivos:
+	# Configurar ambiente do projeto 
+	# Esses passo estão descritos no capítulo "Instalando Ambiente"...
+	# ... aula "trabalhando com projetos e ambientes":
+	# Usar arquivo DEV-Config.json como modelo e criar os aquivos:
 		DEV-Config.json
 		QA-Config.json
 		PROD-Config.json
 
-	# Estrutura pipe line de teste para carragar dados no banco fonte, e da fonte para o (postgre) DW.
+	# Estrutura pipe line de teste para carragar os dados do banco fonte para o destino.
 	
 
 ## 7 - Criar o serviço do Metabase
-	# verifica os containers e imagens disponíveis
+	# Verifica os containers e imagens disponíveis
 		docker ps
 
-	# criar o container Metabase:
+	# Criar o container Metabase:
 		docker run --name metabase --network redehop -p 3000:3000 -d metabase/metabase
+	
+	# Acesse o Apache Hop pelo 'link http://localhost:3000' e siga as instruções de acesso ao Metabase
+	# Configure o Metabase para visualizar o banco de dados PostgreSQL:
+		Connection name: teste
+		Connection type: PostgreSQL
+		Username: rodrigopgcin
+		Password: arruda2212
+		Server host name: postgredestino
+		Port number: 5432
+		Database name: prod
 
 
 
